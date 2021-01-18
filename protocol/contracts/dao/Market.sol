@@ -130,21 +130,25 @@ contract Market is Comptroller, Curve {
             .mul(amount).div(balanceOfCouponUnderlying(msg.sender, couponEpoch), "Market: No underlying");
 
         decrementBalanceOfCouponUnderlying(msg.sender, couponEpoch, amount, "Market: Insufficient coupon underlying balance");
-        if (couponAmount != 0) decrementBalanceOfCoupons(msg.sender, couponEpoch, couponAmount, "Market: Insufficient coupon balance");
         
-        uint burnAmount = couponRedemptionPenalty(couponEpoch, couponAmount);
-        uint256 redeemAmount = couponAmount - burnAmount;
-        
+        uint256 burnAmount;
+        uint256 redeemAmount;
+        if (couponAmount != 0) {
+            decrementBalanceOfCoupons(msg.sender, couponEpoch, couponAmount, "Market: Insufficient coupon balance");
+            burnAmount = couponRedemptionPenalty(couponEpoch, couponAmount);
+            redeemAmount = couponAmount - burnAmount;
+        }
+
         redeemToAccount(msg.sender, amount, redeemAmount);
 
-        if(burnAmount > 0){
+        if(burnAmount > 0) {
             emit CouponBurn(msg.sender, couponEpoch, burnAmount);
         }
 
         emit CouponRedemption(msg.sender, couponEpoch, amount, redeemAmount);
     }
 
-    function redeemCoupons(uint256 couponEpoch, uint256 amount, uint256 minOutput) external {
+    function redeemCoupons(uint256 couponEpoch, uint256 amount, uint256 minPremiumOutput) external {
         require(epoch().sub(couponEpoch) >= 2, "Market: Too early to redeem");
 		require(amount != 0, "Market: Amount too low");
 
@@ -152,20 +156,24 @@ contract Market is Comptroller, Curve {
             .mul(amount).div(balanceOfCouponUnderlying(msg.sender, couponEpoch), "Market: No underlying");
 
         decrementBalanceOfCouponUnderlying(msg.sender, couponEpoch, amount, "Market: Insufficient coupon underlying balance");
-        if (couponAmount != 0) decrementBalanceOfCoupons(msg.sender, couponEpoch, couponAmount, "Market: Insufficient coupon balance");
         
-        uint burnAmount = couponRedemptionPenalty(couponEpoch, couponAmount);
-        uint256 redeemAmount = couponAmount - burnAmount;
+        uint256 burnAmount;
+        uint256 redeemAmount;
+        if (couponAmount != 0) {
+            decrementBalanceOfCoupons(msg.sender, couponEpoch, couponAmount, "Market: Insufficient coupon balance");
+            burnAmount = couponRedemptionPenalty(couponEpoch, couponAmount);
+            redeemAmount = couponAmount - burnAmount;
+        }
 
         Require.that(
-            redeemAmount >= minOutput,
+            redeemAmount >= minPremiumOutput,
             FILE,
             "Insufficient output amount"
         );
 
         redeemToAccount(msg.sender, amount, redeemAmount);
 
-        if(burnAmount > 0){
+        if(burnAmount > 0) {
             emit CouponBurn(msg.sender, couponEpoch, burnAmount);
         }
 
