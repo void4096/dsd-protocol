@@ -123,61 +123,65 @@ contract Market is Comptroller, Curve {
     }
 
     function redeemCoupons(uint256 couponEpoch, uint256 amount) external {
+        require(_state13.price.greaterThan(Decimal.one()), "Market: not in expansion");
         require(epoch().sub(couponEpoch) >= 2, "Market: Too early to redeem");
 		require(amount != 0, "Market: Amount too low");
 
         uint256 couponAmount = balanceOfCoupons(msg.sender, couponEpoch)
             .mul(amount).div(balanceOfCouponUnderlying(msg.sender, couponEpoch), "Market: No underlying");
 
-        decrementBalanceOfCouponUnderlying(msg.sender, couponEpoch, amount, "Market: Insufficient coupon underlying balance");
-        
-        uint256 burnAmount;
-        uint256 redeemAmount;
+        uint256 totalAmount = couponAmount.add(amount);
+        uint256 burnAmount = couponRedemptionPenalty(couponEpoch, totalAmount);
+
         if (couponAmount != 0) {
             decrementBalanceOfCoupons(msg.sender, couponEpoch, couponAmount, "Market: Insufficient coupon balance");
-            burnAmount = couponRedemptionPenalty(couponEpoch, couponAmount);
-            redeemAmount = couponAmount - burnAmount;
+            couponAmount = couponAmount - burnAmount.mul(couponAmount).div(totalAmount);
         }
 
-        redeemToAccount(msg.sender, amount, redeemAmount);
+        decrementBalanceOfCouponUnderlying(msg.sender, couponEpoch, amount, "Market: Insufficient coupon underlying balance");
+        amount = amount - burnAmount.mul(amount).div(totalAmount);
 
-        if(burnAmount > 0) {
+        redeemToAccount(msg.sender, amount, couponAmount);
+
+        if (burnAmount != 0) {
             emit CouponBurn(msg.sender, couponEpoch, burnAmount);
         }
 
-        emit CouponRedemption(msg.sender, couponEpoch, amount, redeemAmount);
+        emit CouponRedemption(msg.sender, couponEpoch, amount, couponAmount);
     }
 
-    function redeemCoupons(uint256 couponEpoch, uint256 amount, uint256 minPremiumOutput) external {
+    function redeemCoupons(uint256 couponEpoch, uint256 amount, uint256 minOutput) external {
+        require(_state13.price.greaterThan(Decimal.one()), "Market: not in expansion");
         require(epoch().sub(couponEpoch) >= 2, "Market: Too early to redeem");
 		require(amount != 0, "Market: Amount too low");
 
         uint256 couponAmount = balanceOfCoupons(msg.sender, couponEpoch)
             .mul(amount).div(balanceOfCouponUnderlying(msg.sender, couponEpoch), "Market: No underlying");
 
-        decrementBalanceOfCouponUnderlying(msg.sender, couponEpoch, amount, "Market: Insufficient coupon underlying balance");
-        
-        uint256 burnAmount;
-        uint256 redeemAmount;
+        uint256 totalAmount = couponAmount.add(amount);
+        uint256 burnAmount = couponRedemptionPenalty(couponEpoch, totalAmount);
+
         if (couponAmount != 0) {
             decrementBalanceOfCoupons(msg.sender, couponEpoch, couponAmount, "Market: Insufficient coupon balance");
-            burnAmount = couponRedemptionPenalty(couponEpoch, couponAmount);
-            redeemAmount = couponAmount - burnAmount;
+            couponAmount = couponAmount - burnAmount.mul(couponAmount).div(totalAmount);
         }
 
+        decrementBalanceOfCouponUnderlying(msg.sender, couponEpoch, amount, "Market: Insufficient coupon underlying balance");
+        amount = amount - burnAmount.mul(amount).div(totalAmount);
+
         Require.that(
-            redeemAmount >= minPremiumOutput,
+            couponAmount.add(amount) >= minOutput,
             FILE,
             "Insufficient output amount"
         );
 
-        redeemToAccount(msg.sender, amount, redeemAmount);
+        redeemToAccount(msg.sender, amount, couponAmount);
 
-        if(burnAmount > 0) {
+        if (burnAmount != 0) {
             emit CouponBurn(msg.sender, couponEpoch, burnAmount);
         }
 
-        emit CouponRedemption(msg.sender, couponEpoch, amount, redeemAmount);
+        emit CouponRedemption(msg.sender, couponEpoch, amount, couponAmount);
     }
 
     function approveCoupons(address spender, uint256 amount) external {

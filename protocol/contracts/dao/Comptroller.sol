@@ -48,8 +48,6 @@ contract Comptroller is Setters {
     }
 
     function redeemToAccount(address account, uint256 amount, uint256 couponAmount) internal {
-        require(_state13.price.greaterThan(Decimal.one()), "Comptroller: not in expansion");
-
         dollar().mint(account, amount);
 
         if (couponAmount != 0) {
