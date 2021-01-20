@@ -88,14 +88,19 @@ contract Market is Comptroller, Curve {
     }
 
     function migrateCoupons(uint256 couponEpoch) external {
-        uint256 balanceOfCoupons = balanceOfCoupons(msg.sender, couponEpoch);
-        require(balanceOfCoupons > 0, "Market: No coupons");
         require(balanceOfCouponUnderlying(msg.sender, couponEpoch) == 0, "Market: Already migrated");
 
+        uint256 balanceOfCoupons = _state.accounts[msg.sender].coupons[couponEpoch];
         uint256 couponUnderlying = balanceOfCoupons.div(2);
 
+        if (outstandingCoupons(couponEpoch) == 0) {
+            // coupons have expired
+            _state.accounts[msg.sender].coupons[couponEpoch] = 0;
+        } else {
+            decrementBalanceOfCoupons(msg.sender, couponEpoch, couponUnderlying, "Market: Insufficient coupon balance");
+        }
+
         incrementBalanceOfCouponUnderlying(msg.sender, couponEpoch, couponUnderlying);
-        decrementBalanceOfCoupons(msg.sender, couponEpoch, couponUnderlying, "Market: Insufficient coupon balance");
 
         emit CouponRedemption(msg.sender, couponEpoch, 0, couponUnderlying);
         emit CouponPurchase(msg.sender, couponEpoch, couponUnderlying, 0);
