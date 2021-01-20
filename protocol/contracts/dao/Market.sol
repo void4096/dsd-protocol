@@ -68,11 +68,15 @@ contract Market is Comptroller, Curve {
 
     function couponRedemptionPenalty(uint256 couponEpoch, uint256 couponAmount) public view returns (uint256) {
         uint timeIntoEpoch = block.timestamp % Constants.getEpochStrategy().period;
-        uint couponAge = epoch() - couponEpoch;
+        uint couponAge = epoch().sub(couponEpoch);
+
+        if (couponAge >= Constants.getCouponExpiration()) {
+            return 0;
+        }
 
         uint couponEpochDecay = Constants.getCouponRedemptionPenaltyDecay() * (Constants.getCouponExpiration() - couponAge) / Constants.getCouponExpiration();
 
-        if(timeIntoEpoch > couponEpochDecay) {
+        if (timeIntoEpoch >= couponEpochDecay) {
             return 0;
         }
 
