@@ -120,15 +120,17 @@ contract Market is Comptroller, Curve {
         );
 
         uint256 epoch = epoch();
-        uint256 couponAmount = couponPremium(amount);
-        incrementBalanceOfCoupons(msg.sender, epoch, couponAmount);
-        incrementBalanceOfCouponUnderlying(msg.sender, epoch, amount);
+        uint256 balanceOfCoupons = amount.add(couponPremium(amount));
+        uint256 couponUnderlying = balanceOfCoupons.div(2);
+
+        incrementBalanceOfCoupons(msg.sender, epoch, couponUnderlying);
+        incrementBalanceOfCouponUnderlying(msg.sender, epoch, couponUnderlying);
 
         burnFromAccount(msg.sender, amount);
 
-        emit CouponPurchase(msg.sender, epoch, amount, couponAmount);
+        emit CouponPurchase(msg.sender, epoch, amount, couponUnderlying);
 
-        return couponAmount;
+        return couponUnderlying;
     }
 
     function redeemCoupons(uint256 couponEpoch, uint256 amount) external {
