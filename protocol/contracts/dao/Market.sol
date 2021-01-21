@@ -97,6 +97,7 @@ contract Market is Comptroller, Curve {
             // coupons have expired
             _state.accounts[msg.sender].coupons[couponEpoch] = 0;
         } else {
+            // coupons have not expired
             decrementBalanceOfCoupons(msg.sender, couponEpoch, couponUnderlying, "Market: Insufficient coupon balance");
         }
 
@@ -120,10 +121,17 @@ contract Market is Comptroller, Curve {
         );
 
         uint256 epoch = epoch();
+
+        // coupon total (deposit + premium)
         uint256 balanceOfCoupons = amount.add(couponPremium(amount));
+
+        // split total by 1/2
         uint256 couponUnderlying = balanceOfCoupons.div(2);
 
+        // 1/2 can expire
         incrementBalanceOfCoupons(msg.sender, epoch, couponUnderlying);
+
+        // 1/2 can always be reclaimed
         incrementBalanceOfCouponUnderlying(msg.sender, epoch, couponUnderlying);
 
         burnFromAccount(msg.sender, amount);
@@ -142,14 +150,20 @@ contract Market is Comptroller, Curve {
             .mul(amount).div(balanceOfCouponUnderlying(msg.sender, couponEpoch), "Market: No underlying");
 
         uint256 totalAmount = couponAmount.add(amount);
+
+        // penalty burn will be applied to premium and underlying
         uint256 burnAmount = couponRedemptionPenalty(couponEpoch, totalAmount);
 
         if (couponAmount != 0) {
             decrementBalanceOfCoupons(msg.sender, couponEpoch, couponAmount, "Market: Insufficient coupon balance");
+
+            // reduce premium by redemption penalty
             couponAmount = couponAmount - burnAmount.mul(couponAmount).div(totalAmount);
         }
 
         decrementBalanceOfCouponUnderlying(msg.sender, couponEpoch, amount, "Market: Insufficient coupon underlying balance");
+
+        // reduce underlying by redemption penalty
         amount = amount - burnAmount.mul(amount).div(totalAmount);
 
         redeemToAccount(msg.sender, amount, couponAmount);
@@ -170,14 +184,20 @@ contract Market is Comptroller, Curve {
             .mul(amount).div(balanceOfCouponUnderlying(msg.sender, couponEpoch), "Market: No underlying");
 
         uint256 totalAmount = couponAmount.add(amount);
+
+        // penalty burn will be applied to premium and underlying
         uint256 burnAmount = couponRedemptionPenalty(couponEpoch, totalAmount);
 
         if (couponAmount != 0) {
             decrementBalanceOfCoupons(msg.sender, couponEpoch, couponAmount, "Market: Insufficient coupon balance");
+
+            // reduce premium by redemption penalty
             couponAmount = couponAmount - burnAmount.mul(couponAmount).div(totalAmount);
         }
 
         decrementBalanceOfCouponUnderlying(msg.sender, couponEpoch, amount, "Market: Insufficient coupon underlying balance");
+
+        // reduce underlying by redemption penalty
         amount = amount - burnAmount.mul(amount).div(totalAmount);
 
         Require.that(
