@@ -26,6 +26,10 @@ contract Comptroller is Setters {
 
     bytes32 private constant FILE = "Comptroller";
 
+    function setPrice(Decimal.D256 memory price) internal {
+        _state13.price = price;
+    }
+
     function mintToAccount(address account, uint256 amount) internal {
         dollar().mint(account, amount);
         if (!bootstrappingAt(epoch())) {
@@ -43,9 +47,13 @@ contract Comptroller is Setters {
         balanceCheck();
     }
 
-    function redeemToAccount(address account, uint256 amount) internal {
-        dollar().transfer(account, amount);
-        decrementTotalRedeemable(amount, "Comptroller: not enough redeemable balance");
+    function redeemToAccount(address account, uint256 amount, uint256 couponAmount) internal {
+        dollar().mint(account, amount);
+
+        if (couponAmount != 0) {
+            dollar().transfer(account, couponAmount);
+            decrementTotalRedeemable(couponAmount, "Comptroller: not enough redeemable balance");
+        }
 
         balanceCheck();
     }
