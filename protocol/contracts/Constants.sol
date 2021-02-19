@@ -24,15 +24,15 @@ library Constants {
     uint256 private constant CHAIN_ID = 1; // Mainnet
 
     /* Bootstrapping */
-    uint256 private constant BOOTSTRAPPING_PERIOD = 150; // 150 epochs
-    uint256 private constant BOOTSTRAPPING_PRICE = 154e16; // 1.54 USDC (targeting 4.5% inflation)
+    uint256 private constant BOOTSTRAPPING_PERIOD = 15000; // 15000 epochs
+    uint256 private constant BOOTSTRAPPING_PRICE = 154e16; // 1.54 BUSD
 
     /* Oracle */
-    address private constant USDC = address(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
-    uint256 private constant ORACLE_RESERVE_MINIMUM = 1e10; // 10,000 USDC
+    address private constant BUSD = address(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56);
+    uint256 private constant ORACLE_RESERVE_MINIMUM = 1e10; // 10,000 BUSD
 
     /* Bonding */
-    uint256 private constant INITIAL_STAKE_MULTIPLE = 1e6; // 100 DSD -> 100M DSDS
+    uint256 private constant INITIAL_STAKE_MULTIPLE = 1e6; // 100 VSD -> 100M VSDS
 
     /* Epoch */
     struct EpochStrategy {
@@ -42,35 +42,35 @@ library Constants {
     }
 
     uint256 private constant EPOCH_OFFSET = 0;
-    uint256 private constant EPOCH_START = 1606348800;
-    uint256 private constant EPOCH_PERIOD = 7200;
+    uint256 private constant EPOCH_START = 1614022808;
+    uint256 private constant EPOCH_PERIOD = 60;
 
     /* Governance */
-    uint256 private constant GOVERNANCE_PERIOD = 36;
-    uint256 private constant GOVERNANCE_QUORUM = 20e16; // 20%
+    uint256 private constant GOVERNANCE_PERIOD = 3600;
+    uint256 private constant GOVERNANCE_QUORUM = 5e16; // 5%
     uint256 private constant GOVERNANCE_PROPOSAL_THRESHOLD = 5e15; // 0.5%
     uint256 private constant GOVERNANCE_SUPER_MAJORITY = 66e16; // 66%
-    uint256 private constant GOVERNANCE_EMERGENCY_DELAY = 6; // 6 epochs
+    uint256 private constant GOVERNANCE_EMERGENCY_DELAY = 600; // 600 epochs
 
     /* DAO */
-    uint256 private constant ADVANCE_INCENTIVE = 150e18; // 150 DSD
-    uint256 private constant DAO_EXIT_LOCKUP_EPOCHS = 36; // 36 epochs fluid
+    uint256 private constant ADVANCE_INCENTIVE = 15e17; // 0.15 VSD
+    uint256 private constant DAO_EXIT_LOCKUP_EPOCHS = 360; // 36 epochs fluid
 
     /* Pool */
-    uint256 private constant POOL_EXIT_LOCKUP_EPOCHS = 12; // 12 epochs fluid
+    uint256 private constant POOL_EXIT_LOCKUP_EPOCHS = 120; // 12 epochs fluid
 
     /* Market */
-    uint256 private constant COUPON_EXPIRATION = 360;
-    uint256 private constant DEBT_RATIO_CAP = 35e16; // 35%
-    uint256 private constant INITIAL_COUPON_REDEMPTION_PENALTY = 50e16; // 50%
-    uint256 private constant COUPON_REDEMPTION_PENALTY_DECAY = 3600; // 1 hour
+    uint256 private constant COUPON_EXPIRATION = 9999999999;
+    uint256 private constant DEBT_RATIO_CAP = 35e20; // 350000%
+    uint256 private constant INITIAL_COUPON_REDEMPTION_PENALTY = 100e16; // 100%
+    uint256 private constant COUPON_REDEMPTION_PENALTY_DECAY = 30; // 30 seconds
 
     /* Regulator */
-    uint256 private constant SUPPLY_CHANGE_LIMIT = 2e16; // 2%
-    uint256 private constant SUPPLY_CHANGE_DIVISOR = 25e18; // 25 > Max expansion at 1.5
-    uint256 private constant COUPON_SUPPLY_CHANGE_LIMIT = 3e16; // 3%
-    uint256 private constant COUPON_SUPPLY_CHANGE_DIVISOR = 1666e16; // 16.66 > Max expansion at ~1.5
-    uint256 private constant NEGATIVE_SUPPLY_CHANGE_DIVISOR = 5e18; // 5 > Max negative expansion at 0.9
+    uint256 private constant SUPPLY_CHANGE_LIMIT = 10e17; // 100%
+    uint256 private constant SUPPLY_CHANGE_DIVISOR = 25e20; // 2500 > Max expansion at 1.5
+    uint256 private constant COUPON_SUPPLY_CHANGE_LIMIT = 10e17; // 100%
+    uint256 private constant COUPON_SUPPLY_CHANGE_DIVISOR = 1666e18; // 1666 > Max expansion at ~1.5
+    uint256 private constant NEGATIVE_SUPPLY_CHANGE_DIVISOR = 5e20; // 500 > Max negative expansion at 0.9
     uint256 private constant ORACLE_POOL_RATIO = 40; // 40%
     uint256 private constant TREASURY_RATIO = 3; // 3%
 
@@ -83,8 +83,8 @@ library Constants {
     /**
      * Getters
      */
-    function getUsdcAddress() internal pure returns (address) {
-        return USDC;
+    function getBusdAddress() internal pure returns (address) {
+        return BUSD;
     }
 
     function getOracleReserveMinimum() internal pure returns (uint256) {
