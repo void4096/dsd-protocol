@@ -1,12 +1,12 @@
 # Dynamic Set Dollar
 
-- shorthand name: `dynamic dollar`
-- full name: `Dynamic Set Dollar`
-- symbol: `DSD`
+- shorthand name: `void dollar`
+- full name: `Void Set Dollar`
+- symbol: `VSD`
 - decimals: `18`
 - icon:
 
-![DSD Logo](https://dsd.finance/logo.png)
+
 
 ## contracts
 ### mainnet
@@ -24,7 +24,7 @@ is available [here](https://github.com/dynamicdollardevs/dsd/blob/master/audit/R
 this project is an experiment - the protocol is audited, and we've put a significant amount of work into testing as well as generally de-risking the design of its core mechanism, however participants should take great caution as bugs resulting in loss of funds are always a possibility.
 
 ```
-Copyright 2020 Dynamic Dollar Devs, based on the works of the Empty Set Squad
+Copyright 2021 Void Dollar Devs, based on the works of the Empty Set Squad and Dynamic Dollar Devs
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use the included code except in compliance with the License.
