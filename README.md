@@ -4,7 +4,7 @@
 - full name: `Void Set Dollar`
 - symbol: `VSD`
 - decimals: `18`
-- icon:
+
 
 
 
@@ -13,7 +13,7 @@
 - `0x6Bf977ED1A09214E6209F4EA5f525261f1A2690a` **DAO (VSDS)**
 - `0xbd2f0cd039e0bfcf88901c98c0bfac5ab27566e3` **VSD**
 - `0xe2e279d1b911bad880d1104a750dfcd262fb6cf4` **Oracle**
-- `0x66e33d2605c5fb25ebb7cd7528e7997b0afa55e8` **UniswapV2 USDC:VSD Pair**
+- `0x66e33d2605c5fb25ebb7cd7528e7997b0afa55e8` **UniswapV2 BUSD:VSD Pair**
 - `0x70A87e1b97436D2F194B8B9EBF337bFc7521C70f` **LP Incentivation Pool**
 
 ## audit of forked codebase
